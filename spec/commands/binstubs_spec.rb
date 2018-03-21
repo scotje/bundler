@@ -39,6 +39,18 @@ RSpec.describe "bundle binstubs <gem>" do
       expect(bundled_app("bin/rails")).to exist
     end
 
+    it "allows installing all binstubs" do
+      install_gemfile! <<-G
+        source "file://#{gem_repo1}"
+        gem "rails"
+      G
+
+      bundle! :binstubs, :all => true
+
+      expect(bundled_app("bin/rails")).to exist
+      expect(bundled_app("bin/rake")).to exist
+    end
+
     it "displays an error when used without any gem" do
       install_gemfile <<-G
         source "file://#{gem_repo1}"
@@ -48,6 +60,17 @@ RSpec.describe "bundle binstubs <gem>" do
       bundle "binstubs"
       expect(exitstatus).to eq(1) if exitstatus
       expect(out).to include("`bundle binstubs` needs at least one gem to run.")
+    end
+
+    it "displays an error when used with --all and gems" do
+      install_gemfile <<-G
+        source "file://#{gem_repo1}"
+        gem "rack"
+      G
+
+      bundle "binstubs rack", :all => true
+      expect(last_command).to be_failure
+      expect(last_command.bundler_err).to include("Cannot specify --all with specific gems")
     end
 
     context "when generating bundle binstub outside bundler" do
@@ -112,7 +135,7 @@ RSpec.describe "bundle binstubs <gem>" do
         it "runs the correct version of bundler" do
           sys_exec "BUNDLER_VERSION='999.999.999' #{bundled_app("bin/bundle")} install"
           expect(exitstatus).to eq(42) if exitstatus
-          expect(last_command.stderr).to include("Activating bundler (999.999.999) failed:").
+          expect(last_command.bundler_err).to include("Activating bundler (999.999.999) failed:").
             and include("To install the version of bundler this project requires, run `gem install bundler -v '999.999.999'`")
         end
       end
@@ -122,7 +145,7 @@ RSpec.describe "bundle binstubs <gem>" do
           lockfile lockfile.gsub(system_bundler_version, "999.999.999")
           sys_exec "#{bundled_app("bin/bundle")} install"
           expect(exitstatus).to eq(42) if exitstatus
-          expect(last_command.stderr).to include("Activating bundler (999.999.999) failed:").
+          expect(last_command.bundler_err).to include("Activating bundler (999.999.999) failed:").
             and include("To install the version of bundler this project requires, run `gem install bundler -v '999.999.999'`")
         end
 
@@ -131,7 +154,7 @@ RSpec.describe "bundle binstubs <gem>" do
           lockfile lockfile.gsub(system_bundler_version, "44.0")
           sys_exec "#{bundled_app("bin/bundle")} install"
           expect(exitstatus).to eq(42) if exitstatus
-          expect(last_command.stderr).to include("Activating bundler (44.0) failed:").
+          expect(last_command.bundler_err).to include("Activating bundler (44.0) failed:").
             and include("To install the version of bundler this project requires, run `gem install bundler -v '44.0'`")
         end
 
@@ -140,7 +163,7 @@ RSpec.describe "bundle binstubs <gem>" do
           lockfile lockfile.gsub(system_bundler_version, "2.12.0.a")
           sys_exec "#{bundled_app("bin/bundle")} install"
           expect(exitstatus).to eq(42) if exitstatus
-          expect(last_command.stderr).to include("Activating bundler (2.12.0.a) failed:").
+          expect(last_command.bundler_err).to include("Activating bundler (2.12.0.a) failed:").
             and include("To install the version of bundler this project requires, run `gem install bundler -v '2.12.0.a'`")
         end
       end
@@ -156,7 +179,7 @@ RSpec.describe "bundle binstubs <gem>" do
         it "calls through to the explicit bundler version" do
           sys_exec "#{bundled_app("bin/bundle")} update --bundler=999.999.999"
           expect(exitstatus).to eq(42) if exitstatus
-          expect(last_command.stderr).to include("Activating bundler (999.999.999) failed:").
+          expect(last_command.bundler_err).to include("Activating bundler (999.999.999) failed:").
             and include("To install the version of bundler this project requires, run `gem install bundler -v '999.999.999'`")
         end
       end
@@ -182,7 +205,7 @@ RSpec.describe "bundle binstubs <gem>" do
           it "attempts to load that version" do
             sys_exec bundled_app("bin/rackup").to_s
             expect(exitstatus).to eq(42) if exitstatus
-            expect(last_command.stderr).to include("Activating bundler (999.999.999) failed:").
+            expect(last_command.bundler_err).to include("Activating bundler (999.999.999) failed:").
               and include("To install the version of bundler this project requires, run `gem install bundler -v '999.999.999'`")
           end
         end
