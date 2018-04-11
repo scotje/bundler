@@ -1,3 +1,45 @@
+## 1.16.2 (2018-04-04)
+
+Changes:
+
+  - Include the gem's source in the gem install error message when available (@papanikge)
+  - Remove unnecessary executable bit from gem template (@voxik)
+  - Dont add the timestamp comment with gems added to the Gemfile via `bundle add` ([#6193](https://github.com/bundler/bundler/issues/6193), @cpgo)
+  - Improve yanked gem error message (@alyssais)
+  - Remove unused instance variable (@segiddins)
+
+Bugfixes:
+
+  - Only trap INT signal and have Ruby's signal default handler be invoked (@shayonj)
+  - Fix warning about the use of `__FILE__` in RubyGems integration testing (@MSP-Greg)
+  - Skip the outdated bundler check when MD5 is not available ([#6032](https://github.com/bundler/bundler/issues/6032), @segiddins)
+  - Fallback to the original error if the friendly message raises (@segiddins)
+  - Rename Bundler.frozen? to avoid Object method conflict ([#6252](https://github.com/bundler/bundler/issues/6252), @segiddins)
+  - Ensure the bindir exists before installing gems (@segiddins)
+  - Handle gzip corruption errors in the compact index client ([#6261](https://github.com/bundler/bundler/issues/6261), @colby-swandale)
+  - Check if the current directory is writeable when writing files in `bundle gem` ([#6219](https://github.com/bundler/bundler/issues/6219), @nilsding)
+  - Fix hang when gemspec has incompatible encoding (@deivid-rodriguez)
+  - Gracefully handle when the lockfile is missing spec entries for the current platform ([#6079](https://github.com/bundler/bundler/issues/6079), @segiddins)
+  - Use Gem::Util.inflate instead of Gem.inflate (@hsbt)
+  - Update binstub generator to use new ERB.new arity in Ruby 2.6 (@koic)
+  - Fix `source_location` call in rubygems integration (@MSP-Greg)
+  - Fail gracefully when resetting git gems to the given revision fails ([#6324](https://github.com/bundler/bundler/issues/6324), @segiddins)
+  - Use `filesystem_access` when copying files in Compact Index Updater ([#6289](https://github.com/bundler/bundler/issues/6289), @segiddins)
+  - Handle exceptions that do not have a backtrace ([#6342](https://github.com/bundler/bundler/issues/6342), @nesaulov)
+  - Check if stderr was closed before writing to it (@shime)
+  - Handle updating a specific gem for a non-local platform ([#6350](https://github.com/bundler/bundler/issues/6350), @greysteil)
+
+Documentation:
+
+  - Correct typo in `bundle binstubs` man page (@erikj, @samueloph)
+  - Update links in `bundle gem` command documentation to use https (@KrauseFx)
+  - Fix broken links between bundler man pages (@segiddins)
+  - Add man page for the `bundle doctor` command ([#6243](https://github.com/bundler/bundler/issues/6243), @nholden)
+  - Document `# frozen_string_literal` in `bundle init` Gemfile (@315tky)
+  - Explain the gemspec files attribute in `bundle gem` template and print a link to bundler.io guides when running `bundle gem` ([#6246](https://github.com/bundler/bundler/issues/6246), @nesaulov)
+  - Small copy tweaks & removed redundant phrasing in the bundler man page (@rubymorillo)
+  - Improve the documentation of the settings load order in Bundler (@rubymorillo)
+
 ## 1.16.1 (2017-12-12)
 
 Bugfixes:
